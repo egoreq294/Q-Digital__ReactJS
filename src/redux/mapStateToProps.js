@@ -1,6 +1,6 @@
 function mapStateToProps(component) {
     switch(component) {        
-        case "Slider": {
+        case "SliderSection": {
             return function (state) {
                 return {
                     toggle: state.toggle
