@@ -1,13 +1,15 @@
 import React from 'react';
 
 import store from '../redux/store';
-import {toggleLocalOrRemote} from '../redux/actions';
+import mapDispatchToProps from './../redux/mapDispatchToProps';
+import mapStateToProps from './../redux/mapStateToProps';
+import { connect } from 'react-redux';
+
 
 function Slider(props){
-    console.log(store.getState());
     function handleClickPrev(){
-        console.log(store.getState());
-        store.dispatch({ type: toggleLocalOrRemote, toggle: toggleLocalOrRemote.toggle?false:true});
+        let prevStore = store.getState().toggle;
+        props.changeToggle(prevStore ? false : true);
         console.log(store.getState());
     }
     return(
@@ -19,4 +21,6 @@ function Slider(props){
     )
 }
 
-export default Slider;
+
+const Slider_1_W =  connect(mapStateToProps("Slider"), mapDispatchToProps("Slider"))(Slider);
+export default Slider_1_W;
