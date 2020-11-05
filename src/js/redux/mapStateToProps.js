@@ -1,6 +1,6 @@
 function mapStateToProps(component) {
     switch (component) {
-        case 'SliderSection': {
+        case 'SliderPage': {
             return function (state) {
                 return {
                     imgStore: state.imgStore,

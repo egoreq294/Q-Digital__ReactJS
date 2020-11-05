@@ -3,7 +3,7 @@ import toggleLocalOrRemoteCreator from './actionCreators';
 
 function mapDispatchToProps(component) {
     switch (component) {
-        case 'SliderSection':
+        case 'SliderPage':
             return function (dispatch) {
                 return {
                     changeToggle: bindActionCreators(

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -6,7 +6,7 @@ import store from '../redux/store';
 import mapDispatchToProps from '../redux/mapDispatchToProps';
 import mapStateToProps from '../redux/mapStateToProps';
 
-import AwesomeSlider from 'react-awesome-slider';
+import Slider from '../components/slider';
 
 import image0 from '../../img/img0.jpg';
 import image1 from '../../img/img1.jpg';
@@ -17,27 +17,38 @@ const localStore = [
     { id: 2, source: image1 },
     { id: 3, source: image2 },
 ];
-const remoteStore = [
-    { id: 1, source: 'https://imagesapi.osora.ru/images/0.jpg' },
-    { id: 2, source: 'https://imagesapi.osora.ru/images/1.jpg' },
-    { id: 3, source: 'https://imagesapi.osora.ru/images/2.jpg' },
-];
+let remoteStore = [];
 
-function SliderSection(props) {
+function SliderPage(props) {
+    useEffect(() => {
+        fetch('https://imagesapi.osora.ru/')
+            .then((response) => {
+                return response.json();
+            })
+            .then((json) => {
+                remoteStore = json.map((item, index) => {
+                    return { id: index, source: item };
+                });
+            })
+            .catch((err) => {
+                alert(err);
+            });
+    }, []);
+
     function handleClickSwitch() {
         props.changeToggle();
     }
+    const renderImages =
+        props.imgStore === 'localStore' ? localStore : remoteStore;
+
     return (
-        <section className="slider">
-            <AwesomeSlider className="awesome-slider" bullets={false}>
-                {store.getState().imgStore === 'localStore'
-                    ? localStore.map((item) => (
-                          <div key={item.id} data-src={item.source} />
-                      ))
-                    : remoteStore.map((item) => (
-                          <div key={item.id} data-src={item.source} />
-                      ))}
-            </AwesomeSlider>
+        <section className="slider-page">
+            {store.getState().imgStore === 'localStore' ? (
+                <h1>LOCAL</h1>
+            ) : (
+                <h1>REMOTE</h1>
+            )}
+            <Slider className="slider" imgs={renderImages} />
             <button className="slider__btn" onClick={handleClickSwitch}>
                 switch to remote
             </button>
@@ -48,8 +59,8 @@ function SliderSection(props) {
     );
 }
 
-const SliderSection_W = connect(
-    mapStateToProps('SliderSection'),
-    mapDispatchToProps('SliderSection')
-)(SliderSection);
-export default SliderSection_W;
+const SliderPage_W = connect(
+    mapStateToProps('SliderPage'),
+    mapDispatchToProps('SliderPage')
+)(SliderPage);
+export default SliderPage_W;
