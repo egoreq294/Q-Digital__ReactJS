@@ -1,0 +1,27 @@
+@import './scss/app';
+@import './scss/components/main-page';
+@import './scss/components/slider';
+@import 'react-awesome-slider/dist/styles.css';
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+        'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+        'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+        monospace;
+}
+.awssld__controls__arrow-right::before,
+.awssld__controls__arrow-right::after,
+.awssld__controls__arrow-left::before,
+.awssld__controls__arrow-left::after {
+    background-color: white;
+}
+.awssld__controls__arrow-right,
+.awssld__controls__arrow-left {
+    opacity: 1 !important;
+}

@@ -1,11 +1,14 @@
-.slider__btn{
+.slider__btn {
     cursor: pointer;
     padding: 10px;
     margin: 10px;
     height: auto;
 }
-.slider{
+.slider {
     display: flex;
     flex-direction: column;
-    align-items:center;
+    align-items: center;
+}
+.awesome-slider {
+    width: 70% !important;
 }
