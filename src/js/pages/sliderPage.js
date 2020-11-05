@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import store from '../redux/store';
 import mapDispatchToProps from '../redux/mapDispatchToProps';
 import mapStateToProps from '../redux/mapStateToProps';
 
@@ -43,11 +42,7 @@ function SliderPage(props) {
 
     return (
         <section className="slider-page">
-            {store.getState().imgStore === 'localStore' ? (
-                <h1>LOCAL</h1>
-            ) : (
-                <h1>REMOTE</h1>
-            )}
+            {props.imgStore === 'localStore' ? <h1>LOCAL</h1> : <h1>REMOTE</h1>}
             <Slider className="slider" imgs={renderImages} />
             <button className="slider__btn" onClick={handleClickSwitch}>
                 switch to remote

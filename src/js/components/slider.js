@@ -22,6 +22,7 @@ function Slider(props) {
         newImagesArray.push(firstelem);
         setRenderImage(newImagesArray);
     }
+
     return (
         <div className="slider">
             <button onClick={handleClickPrev}>prev</button>
