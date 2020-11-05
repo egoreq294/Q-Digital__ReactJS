@@ -3,7 +3,7 @@ function mapStateToProps(component) {
         case "SliderSection": {
             return function (state) {
                 return {
-                    toggle: state.toggle
+                    imgStore: state.imgStore
                 };
             }
         }
