@@ -1,6 +1,6 @@
-import { LOCAL_OR_REMOTE } from './actionTypes';
+import { REMOTE } from './actionTypes';
 
-export const localRemote = (content) => ({
-    type: LOCAL_OR_REMOTE,
-    imgs: content,
+export const setRemote = (content) => ({
+    type: REMOTE,
+    remote: content,
 });

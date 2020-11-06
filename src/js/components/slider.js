@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Button from './button';
 
 function Slider(props) {
     const [renderImage, setRenderImage] = useState([]);
@@ -10,7 +11,6 @@ function Slider(props) {
     function handleClickPrev() {
         const lastelem = renderImage[renderImage.length - 1];
         let newImagesArray = renderImage.concat();
-        console.log(newImagesArray);
         newImagesArray.unshift(lastelem);
         newImagesArray.pop();
         setRenderImage(newImagesArray);
@@ -25,11 +25,15 @@ function Slider(props) {
 
     return (
         <div className="slider">
-            <button onClick={handleClickPrev}>prev</button>
-            <div className="slider__img">
-                {renderImage[0] && <img src={renderImage[0].source} alt="" />}
-            </div>
-            <button onClick={handleClickNext}>next</button>
+            <Button onClick={handleClickPrev} text="prev" />
+            {renderImage[0] && (
+                <img
+                    className="slider__img"
+                    src={renderImage[0].source}
+                    alt=""
+                />
+            )}
+            <Button onClick={handleClickNext} text="next" />
         </div>
     );
 }

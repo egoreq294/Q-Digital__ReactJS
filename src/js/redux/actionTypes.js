@@ -1,1 +1,1 @@
-export const LOCAL_OR_REMOTE = 'LOCAL_OR_REMOTE';
+export const REMOTE = 'REMOTE';

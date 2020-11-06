@@ -1,12 +1,11 @@
-import { LOCAL_OR_REMOTE } from './actionTypes';
-import { localStore } from '../pages/sliderPage';
+import { REMOTE } from './actionTypes';
 
-const initialState = { imgs: localStore };
+const initialState = { remote: [] };
 
 export default function reducer(state = initialState, action) {
     switch (action.type) {
-        case LOCAL_OR_REMOTE: {
-            return { imgs: action.imgs };
+        case REMOTE: {
+            return { remote: action.remote };
         }
         default:
             return state;
