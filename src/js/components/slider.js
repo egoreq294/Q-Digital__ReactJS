@@ -1,35 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Button from './button';
 
 function Slider(props) {
-    const [renderImage, setRenderImage] = useState([]);
+    const [count, setCount] = useState([0]);
 
-    useEffect(() => {
-        setRenderImage(props.imgs);
-    }, [props.imgs]);
-
-    function handleClickPrev() {
-        const lastelem = renderImage[renderImage.length - 1];
-        let newImagesArray = renderImage.concat();
-        newImagesArray.unshift(lastelem);
-        newImagesArray.pop();
-        setRenderImage(newImagesArray);
-    }
-    function handleClickNext() {
-        const firstelem = renderImage[0];
-        let newImagesArray = renderImage.concat();
-        newImagesArray.shift();
-        newImagesArray.push(firstelem);
-        setRenderImage(newImagesArray);
-    }
+    const handleClickPrev = () => {
+        const images = props.imgs;
+        let count1 = count;
+        if (--count1 < 0) {
+            count1 = images.length - 1;
+        }
+        setCount(count1);
+    };
+    const handleClickNext = () => {
+        const images = props.imgs;
+        let count1 = count;
+        if (++count1 > images.length - 1) {
+            count1 = 0;
+        }
+        setCount(count1);
+    };
 
     return (
         <div className="slider">
             <Button onClick={handleClickPrev} text="prev" />
-            {renderImage[0] && (
+            {props.imgs[0] && (
                 <img
                     className="slider__img"
-                    src={renderImage[0].source}
+                    src={props.imgs[count].source}
                     alt=""
                 />
             )}
