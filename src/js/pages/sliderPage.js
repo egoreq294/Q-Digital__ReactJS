@@ -11,7 +11,7 @@ import image0 from '../../img/img0.jpg';
 import image1 from '../../img/img1.jpg';
 import image2 from '../../img/img2.jpg';
 
-export const localStore = [
+const localStore = [
     { id: 1, source: image0 },
     { id: 2, source: image1 },
     { id: 3, source: image2 },
