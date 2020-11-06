@@ -2,18 +2,6 @@ import React from 'react';
 
 import * as THREE from 'three';
 
-/*function MainPage() {    
-    return (
-        <section className="main-page">
-            <div className="main-page__text">HELLO</div>
-            <Link className="link" to="/slider">
-                Слайдер
-            </Link>
-        </section>
-    );
-    return <div className="threejs-root">{renderer.domElement}</div>;
-}*/
-
 class MainPage extends React.Component {
     mount = React.createRef();
 
