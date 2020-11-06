@@ -1,17 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import mapDispatchToProps from '../redux/mapDispatchToProps';
-import mapStateToProps from '../redux/mapStateToProps';
-
 import Slider from '../components/slider';
+
+import { localRemote } from '../redux/actions';
 
 import image0 from '../../img/img0.jpg';
 import image1 from '../../img/img1.jpg';
 import image2 from '../../img/img2.jpg';
 
-const localStore = [
+export const localStore = [
     { id: 1, source: image0 },
     { id: 2, source: image1 },
     { id: 3, source: image2 },
@@ -19,6 +18,8 @@ const localStore = [
 let remoteStore = [];
 
 function SliderPage(props) {
+    const [toggle, setToggle] = useState('local');
+
     useEffect(() => {
         fetch('https://imagesapi.osora.ru/')
             .then((response) => {
@@ -32,18 +33,24 @@ function SliderPage(props) {
             .catch((err) => {
                 alert(err);
             });
-    }, []);
+    }, [props]);
 
     function handleClickSwitch() {
-        props.changeToggle();
+        if (toggle === 'local') {
+            props.localRemote(remoteStore);
+            setToggle('remote');
+        } else {
+            props.localRemote(localStore);
+            setToggle('local');
+        }
     }
-    const renderImages =
-        props.imgStore === 'localStore' ? localStore : remoteStore;
-
+    console.log(props.imgStore);
     return (
         <section className="slider-page">
-            {props.imgStore === 'localStore' ? <h1>LOCAL</h1> : <h1>REMOTE</h1>}
-            <Slider className="slider" imgs={renderImages} />
+            {toggle === 'local' ? <h1>LOCAL</h1> : <h1>REMOTE</h1>}
+            {props.imgStore && (
+                <Slider className="slider" imgs={props.imgStore} />
+            )}
             <button className="slider__btn" onClick={handleClickSwitch}>
                 switch to remote
             </button>
@@ -54,8 +61,10 @@ function SliderPage(props) {
     );
 }
 
-const SliderPage_W = connect(
-    mapStateToProps('SliderPage'),
-    mapDispatchToProps('SliderPage')
-)(SliderPage);
-export default SliderPage_W;
+const mapStateToProps = (state) => {
+    return {
+        imgStore: state.imgs,
+    };
+};
+
+export default connect(mapStateToProps, { localRemote })(SliderPage);
