@@ -6,9 +6,9 @@ class MainPage extends React.Component {
     mount = React.createRef();
 
     componentDidMount() {
-        let scene = new THREE.Scene();
+        let scene = new THREE.Scene(); //Сцена
 
-        let camera = new THREE.PerspectiveCamera(
+        let camera = new THREE.PerspectiveCamera( //Камера
             90,
             window.innerWidth / window.innerHeight,
             0.1,
@@ -19,25 +19,34 @@ class MainPage extends React.Component {
         renderer.setSize(window.innerWidth, window.innerHeight);
         this.mount.current.appendChild(renderer.domElement);
 
-        let geometry = new THREE.SphereGeometry(1, 32, 32); //Сфара
-
-        let material = new THREE.MeshNormalMaterial(); //Навешиваем на нее материал
-
-        let sphere = new THREE.Mesh(geometry, material); //Объединяем
-
-        const light = new THREE.AmbientLight(0x404040); // soft white light
-        scene.add(light);
-
+        let sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
+        let sphereMaterial = new THREE.MeshBasicMaterial({
+            color: 0x0000ff,
+            wireframe: true,
+        });
+        let sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
         scene.add(sphere);
-        camera.position.z = 3;
 
-        /*let animate = function render() {
+        const planeGeometry = new THREE.PlaneGeometry(4, 4);
+        const planeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        plane.rotation.x = (-90 * Math.PI) / 180;
+        plane.position.y = -1;
+        scene.add(plane);
+
+        camera.rotation.y = (45 * Math.PI) / 180;
+        camera.rotation.x = (-45 * Math.PI) / 180;
+        camera.rotation.z = (30 * Math.PI) / 180;
+        camera.position.z = 2;
+        camera.position.y = 2;
+        camera.position.x = 3;
+
+        let animate = function render() {
             requestAnimationFrame(render);
-            sphere.rotation.x += 0.01;
             sphere.rotation.y += 0.01;
             renderer.render(scene, camera);
         };
-        animate();*/
+        animate();
         renderer.render(scene, camera);
     }
 
