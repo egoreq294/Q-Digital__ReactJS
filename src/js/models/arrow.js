@@ -7,7 +7,10 @@ export default class Arrow {
         triangle.lineTo(-0.1, 0.2);
         triangle.lineTo(0.1, 0.2);
         triangle.lineTo(0, 0);
-        const extrudeSettings = { bevelEnabled: false, depth: 0.03 };
+        const extrudeSettings = {
+            bevelEnabled: false,
+            depth: 0.03,
+        };
         const geometry = new THREE.ExtrudeBufferGeometry(
             triangle,
             extrudeSettings

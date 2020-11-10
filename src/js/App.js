@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 
 import MainPage from './pages/mainPage';
 import SliderPage from './pages/sliderPage';
-import NewPage from './pages/newMainPage';
+//import NewPage from './pages/newMainPage';
 import store from './redux/store';
 
 function App() {
@@ -13,7 +13,8 @@ function App() {
             <Router>
                 <Route exact path="/" component={MainPage} />
                 <Route path="/slider" component={SliderPage} />
-                <Route path="/newpage" component={NewPage} />
+
+                {/*<Route path="/newpage" component={NewPage} />*/}
             </Router>
         </Provider>
     );

@@ -1,28 +1,44 @@
 import * as THREE from 'three';
 import Location from './location';
-import panorama1 from '../../img/pano_1.png';
+import data from './data';
 export default class Sphere {
+    constructor(app) {
+        this.app = app;
+    }
     init = async () => {
-        return new Promise((resolve) => {
-            const firstLocation = new Location(panorama1);
-            firstLocation.loadTexture().then((texture) => {
-                this.geometry = new THREE.SphereGeometry(1, 32, 32);
-                this.material = new THREE.MeshBasicMaterial({
-                    map: texture,
-                    side: THREE.BackSide,
+        if (!this.app.locations.length) {
+            return new Promise((resolve) => {
+                this.firstLocation = new Location(data[0]);
+                this.app.locations.push(this.firstLocation);
+                this.firstLocation.loadTexture().then((texture) => {
+                    this.geometry = new THREE.SphereGeometry(1, 32, 32);
+                    this.material = new THREE.MeshBasicMaterial({
+                        map: texture,
+                        side: THREE.BackSide,
+                    });
+                    this.mesh = new THREE.Mesh(this.geometry, this.material);
+                    resolve(this);
                 });
-                this.mesh = new THREE.Mesh(this.geometry, this.material);
-                resolve(this);
             });
-        });
+        } else {
+            this.geometry = new THREE.SphereGeometry(1, 32, 32);
+            this.material = new THREE.MeshBasicMaterial({
+                map: this.app.locations[0].texture,
+                side: THREE.BackSide,
+            });
+            this.mesh = new THREE.Mesh(this.geometry, this.material);
+        }
     };
-    changeTo = async (newTexture) => {
-        return new Promise((resolve) => {
-            const newLocation = new Location(newTexture);
-            this.texture = newLocation.loadTexture();
-            resolve(this.texture);
-        }).then((texture) => {
-            this.mesh.material.map = texture;
-        });
+    changeTo = async (id) => {
+        this.location = this.app.locations.find((item) => item.id === id);
+        if (this.location) {
+            this.mesh.material.map = this.location.texture;
+        } else {
+            let newlocationObject = data.find((item) => item.id === id);
+            this.newLocation = new Location(newlocationObject);
+            this.app.locations.push(this.newLocation);
+            await this.newLocation.loadTexture();
+            this.mesh.material.map = this.newLocation.texture;
+        }
     };
 }
