@@ -3,9 +3,6 @@ import React from 'react';
 import * as THREE from 'three';
 
 import Sphere from '../models/sphere';
-import Arrow from '../models/arrow';
-
-import { calcVector } from '../helpers/helpers';
 
 class MainPage extends React.Component {
     locations = [];
@@ -40,41 +37,6 @@ class MainPage extends React.Component {
         this.light = new THREE.PointLight(0xffffff);
         this.light.position.y = 10;
         this.scene.add(this.light);
-        //===============================================================================
-        //
-        //      ТЕСТ СТРЕЛОК
-        //
-        let newVector1 = calcVector(0, 0, 0, 0, 0, 3);
-        this.arrow1 = new Arrow();
-        this.arrow1.init(...newVector1);
-
-        let newVector2 = calcVector(0, 0, 0, 0, 0, -3);
-        this.arrow2 = new Arrow();
-        this.arrow2.init(...newVector2);
-
-        let newVector3 = calcVector(0, 0, 0, 3, 0, 0);
-        this.arrow3 = new Arrow();
-        this.arrow3.init(...newVector3);
-
-        let newVector4 = calcVector(0, 0, 0, -3, 0, 0);
-        this.arrow4 = new Arrow();
-        this.arrow4.init(...newVector4);
-
-        let newVector5 = calcVector(0, 0, 0, 2.5, 0, -1.5);
-        this.arrow5 = new Arrow();
-        this.arrow5.init(...newVector5);
-
-        this.scene.add(
-            this.arrow1.mesh,
-            this.arrow2.mesh,
-            this.arrow3.mesh,
-            this.arrow4.mesh,
-            this.arrow5.mesh
-        );
-        //
-        //
-        //
-        //=================================================================================
 
         this.mainSphere = new Sphere(this);
         await this.mainSphere.init();

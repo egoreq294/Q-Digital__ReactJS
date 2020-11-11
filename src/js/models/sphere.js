@@ -8,7 +8,7 @@ export default class Sphere {
     init = async () => {
         if (!this.app.locations.length) {
             return new Promise((resolve) => {
-                this.firstLocation = new Location(data[0]);
+                this.firstLocation = new Location(data[0], this.app);
                 this.app.locations.push(this.firstLocation);
                 this.firstLocation.loadTexture().then((texture) => {
                     this.geometry = new THREE.SphereGeometry(1, 32, 32);
@@ -19,6 +19,7 @@ export default class Sphere {
                     this.mesh = new THREE.Mesh(this.geometry, this.material);
                     resolve(this);
                 });
+                this.firstLocation.createArrows();
             });
         } else {
             this.geometry = new THREE.SphereGeometry(1, 32, 32);
@@ -35,7 +36,8 @@ export default class Sphere {
             this.mesh.material.map = this.location.texture;
         } else {
             let newlocationObject = data.find((item) => item.id === id);
-            this.newLocation = new Location(newlocationObject);
+            this.newLocation = new Location(newlocationObject, this.app);
+            this.newLocation.createArrows();
             this.app.locations.push(this.newLocation);
             await this.newLocation.loadTexture();
             this.mesh.material.map = this.newLocation.texture;

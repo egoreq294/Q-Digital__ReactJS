@@ -1,12 +1,18 @@
 import * as THREE from 'three';
-import { calcVectorLength, calcUnitVector } from '../helpers/helpers';
+import {
+    calcVector,
+    calcVectorLength,
+    calcUnitVector,
+} from '../helpers/helpers';
 
 export default class Arrow {
-    init = (x, y, z) => {
-        this.vectorLengh = calcVectorLength(x, y, z);
-        this.unitVector = calcUnitVector(x, y, z, this.vectorLengh);
-        console.log(this.vectorLengh);
-        console.log(...this.unitVector);
+    init = (x1, y1, z1, x2, y2, z2) => {
+        this.vectorFromTo = calcVector(x1, y1, z1, x2, y2, z2);
+        this.vectorLengh = calcVectorLength(...this.vectorFromTo);
+        this.unitVector = calcUnitVector(
+            ...this.vectorFromTo,
+            this.vectorLengh
+        );
         let coef = 0.1;
 
         let triangleGeometry = new THREE.Geometry();

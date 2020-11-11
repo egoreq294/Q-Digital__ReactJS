@@ -14,12 +14,12 @@ const data = [
             y: 0,
             z: 0,
         },
-        description: pano_2,
+        description: 'центр перекрестка',
         siblings: [1, 2, 3],
     },
     {
         id: 1,
-        path: 'locations/pano_2.png',
+        path: pano_2,
         coords: {
             x: 1,
             y: 0,
