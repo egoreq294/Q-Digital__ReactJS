@@ -15,9 +15,14 @@ class MainPage extends React.Component {
     mouseDownLon;
     mouseDownLat;
     lat = 0;
-    lon = -90;
+    lon = 0;
     phi = 0;
     theta = 0;
+
+    INTERSECTED;
+    mouse = new THREE.Vector2();
+    raycaster = new THREE.Raycaster();
+
     mount = React.createRef();
     async componentDidMount() {
         this.scene = new THREE.Scene();
@@ -30,9 +35,6 @@ class MainPage extends React.Component {
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.mount.current.appendChild(this.renderer.domElement);
-
-        this.mouse = new THREE.Vector2();
-        this.raycaster = new THREE.Raycaster();
 
         this.light = new THREE.PointLight(0xffffff);
         this.light.position.y = 10;
@@ -47,16 +49,6 @@ class MainPage extends React.Component {
         this.secondSphere.mesh.position.z = -2;
         this.scene.add(this.secondSphere.mesh);
 
-        const planeGeometry = new THREE.PlaneGeometry(4, 20);
-        const planeMaterial = new THREE.MeshBasicMaterial({
-            color: 0x00ff00,
-        });
-
-        const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-        plane.rotation.x = (-90 * Math.PI) / 180;
-        plane.position.y = -1;
-        this.scene.add(plane);
-
         /*this.camera.rotation.y = (45 * Math.PI) / 180;
         this.camera.rotation.x = (-45 * Math.PI) / 180;
         this.camera.rotation.z = (30 * Math.PI) / 180;
@@ -65,9 +57,10 @@ class MainPage extends React.Component {
         this.camera.position.z = 2;*/
 
         this.camera.target = new THREE.Vector3(0, 0, 0);
-        this.mount.current.addEventListener('mousedown', this.onPointerStart);
-        this.mount.current.addEventListener('mousemove', this.onPointerMove);
-        this.mount.current.addEventListener('mouseup', this.onPointerUp);
+        this.mount.current.addEventListener('click', this.onArrowClick);
+        window.addEventListener('mousedown', this.onPointerStart);
+        window.addEventListener('mousemove', this.onPointerMove);
+        window.addEventListener('mouseup', this.onPointerUp);
         window.addEventListener('resize', this.onWindowResize);
         this.animate();
     }
@@ -98,26 +91,31 @@ class MainPage extends React.Component {
     onPointerUp = () => {
         this.mouseDownMouseX = null;
     };
+    onArrowClick = async (event) => {
+        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+        const intersects = this.raycaster.intersectObjects(
+            this.mainSphere.location.arrows,
+            true
+        );
+        if (intersects.length) {
+            await this.mainSphere.changeTo(intersects[0].object.idTo);
+        }
+    };
     animate = () => {
         requestAnimationFrame(this.animate);
         this.lat = Math.max(-85, Math.min(85, this.lat));
         this.phi = THREE.Math.degToRad(90 - this.lat);
         this.theta = THREE.Math.degToRad(this.lon);
-        this.camera.target.x =
-            0.001 * Math.sin(this.phi) * Math.cos(this.theta);
-        this.camera.target.y = 0.001 * Math.cos(this.phi);
-        this.camera.target.z =
-            0.001 * Math.sin(this.phi) * Math.sin(this.theta);
+        this.camera.target.x = Math.sin(this.phi) * Math.cos(this.theta);
+        this.camera.target.y = Math.cos(this.phi);
+        this.camera.target.z = Math.sin(this.phi) * Math.sin(this.theta);
         this.camera.lookAt(this.camera.target);
-
-        /*this.raycaster.setFromCamera(this.mouse, this.camera);
-        const intersects = this.raycaster.intersectObjects(this.scene.children);
-        if (intersects.length > 0) {
-            console.log(intersects);
-        }*/
-
         this.renderer.render(this.scene, this.camera);
     };
+
     render() {
         return <div ref={this.mount} />;
     }

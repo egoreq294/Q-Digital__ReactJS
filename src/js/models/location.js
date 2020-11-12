@@ -11,6 +11,7 @@ export default class Location {
         this.siblings = siblings;
         this.app = app;
     }
+    arrows = [];
     loadTexture = () => {
         return new Promise((resolve) => {
             this.texture = new THREE.TextureLoader().load(this.path);
@@ -20,7 +21,7 @@ export default class Location {
     createArrows = () => {
         this.siblings.forEach((id) => {
             const siblingData = data.find((element) => element.id === id);
-            const arrow = new Arrow();
+            const arrow = new Arrow(id);
             arrow.init(
                 this.coords.x,
                 this.coords.y,
@@ -29,7 +30,14 @@ export default class Location {
                 siblingData.coords.y,
                 siblingData.coords.z
             );
+            this.arrows.push(arrow.mesh);
             this.app.scene.add(arrow.mesh);
         });
+    };
+    removeArrows = () => {
+        this.arrows.forEach((item) => {
+            this.app.scene.remove(item);
+        });
+        this.arrows = [];
     };
 }
