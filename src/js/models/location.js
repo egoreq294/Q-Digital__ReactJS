@@ -14,10 +14,16 @@ export default class Location {
     arrows = [];
     loadTexture = () => {
         return new Promise((resolve) => {
-            this.texture = new THREE.TextureLoader().load(this.path);
-            resolve(this.texture);
+            new THREE.TextureLoader().load(this.path, (texture) => {
+                this.texture = texture;
+                resolve(texture);
+            });
+
+            //this.texture = new THREE.TextureLoader().load(this.path);
+            //resolve(this.texture);
         });
     };
+
     createArrows = () => {
         this.siblings.forEach((id) => {
             const siblingData = data.find((element) => element.id === id);

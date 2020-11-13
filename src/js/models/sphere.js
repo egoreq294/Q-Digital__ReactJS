@@ -9,37 +9,49 @@ export default class Sphere {
     init = async () => {
         this.location = new Location(data[0], this.app);
         this.geometry = new THREE.SphereGeometry(1, 32, 32);
-        if (!this.app.locations.length) {
-            this.app.locations.push(this.location);
-            await this.location.loadTexture();
-            this.material = new THREE.MeshBasicMaterial({
-                map: this.location.texture,
-                side: THREE.DoubleSide,
-            });
-            this.location.createArrows();
-        } else {
-            this.material = new THREE.MeshBasicMaterial({
-                map: this.app.locations[0].texture,
-                side: THREE.DoubleSide,
-            });
-        }
+        this.material = new THREE.MeshBasicMaterial({
+            side: THREE.DoubleSide,
+            transparent: true,
+        });
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.mesh.scale.set(-1, 1, -1);
     };
 
-    changeTo = async (id) => {
+    changeTo = async (id, toggleArrows) => {
         this.location.removeArrows();
         this.location = this.app.locations.find((item) => item.id === id);
         if (this.location) {
             this.mesh.material.map = this.location.texture;
-            this.location.createArrows();
         } else {
+            this.app.setState({ isLoading: true });
+            this.app.toggleControl = false;
             let newLocationObject = data.find((item) => item.id === id);
             this.location = new Location(newLocationObject, this.app);
-            this.location.createArrows();
             this.app.locations.push(this.location);
-            await this.location.loadTexture();
+            await this.location.loadTexture().then((res) => {
+                console.log(res);
+                this.app.setState({ isLoading: false });
+                this.app.toggleControl = true;
+            });
             this.mesh.material.map = this.location.texture;
         }
+        if (toggleArrows) {
+            this.location.createArrows();
+        }
+        //прелоад следующих сцен
+        this.location.siblings.forEach(async (id) => {
+            let checkLocation = this.app.locations.find(
+                (item) => item.id === id
+            );
+            if (!checkLocation) {
+                let preloadLocationObject = data.find((item) => item.id === id);
+                let preloadLocation = new Location(
+                    preloadLocationObject,
+                    this.app
+                );
+                await preloadLocation.loadTexture();
+                this.app.locations.push(preloadLocation);
+            }
+        });
     };
 }

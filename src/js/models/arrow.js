@@ -7,7 +7,6 @@ import {
 } from '../helpers/helpers';
 
 export default class Arrow {
-    name = 'name';
     constructor(idTo) {
         this.idTo = idTo;
     }
@@ -46,6 +45,7 @@ export default class Arrow {
         this.mesh = new THREE.Mesh(triangleGeometry, triangleMaterial);
 
         this.mesh.idTo = this.idTo;
+        this.mesh.unitVector = this.unitVector;
         this.mesh.position.y = -0.3;
         this.mesh.position.x = this.unitVector.x * 0.5;
         this.mesh.position.z = this.unitVector.z * 0.5;

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import * as THREE from 'three';
+import TWEEN from 'tween';
 
 import Sphere from '../models/sphere';
 
@@ -18,8 +19,10 @@ class MainPage extends React.Component {
     lon = 0;
     phi = 0;
     theta = 0;
-
-    INTERSECTED;
+    state = {
+        isLoading: true,
+    };
+    toggleControl = true;
     mouse = new THREE.Vector2();
     raycaster = new THREE.Raycaster();
 
@@ -41,13 +44,16 @@ class MainPage extends React.Component {
         this.scene.add(this.light);
 
         this.mainSphere = new Sphere(this);
-        await this.mainSphere.init();
+        this.mainSphere.init();
         this.scene.add(this.mainSphere.mesh);
+        await this.mainSphere.changeTo(0, true);
 
+        console.log(this.mainSphere.mesh.material.map);
         this.secondSphere = new Sphere(this);
-        await this.secondSphere.init();
+        this.secondSphere.init();
         this.secondSphere.mesh.position.z = -2;
         this.scene.add(this.secondSphere.mesh);
+        await this.secondSphere.changeTo(0, false);
 
         /*this.camera.rotation.y = (45 * Math.PI) / 180;
         this.camera.rotation.x = (-45 * Math.PI) / 180;
@@ -64,44 +70,96 @@ class MainPage extends React.Component {
         window.addEventListener('resize', this.onWindowResize);
         this.animate();
     }
+    componentWillUnmount() {
+        this.removeEvents();
+    }
     onWindowResize = () => {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     };
     onPointerStart = (event) => {
-        let clientX = event.clientX || event.touches[0].clientX;
-        let clientY = event.clientY || event.touches[0].clientY;
-        this.mouseDownMouseX = clientX;
-        this.mouseDownMouseY = clientY;
-        this.mouseDownLon = this.lon;
-        this.mouseDownLat = this.lat;
+        if (this.toggleControl) {
+            let clientX = event.clientX || event.touches[0].clientX;
+            let clientY = event.clientY || event.touches[0].clientY;
+            this.mouseDownMouseX = clientX;
+            this.mouseDownMouseY = clientY;
+            this.mouseDownLon = this.lon;
+            this.mouseDownLat = this.lat;
+        }
     };
     onPointerMove = (event) => {
-        if (!this.mouseDownMouseX) return;
-        let clientX = event.clientX || event.touches[0].clientX;
-        let clientY = event.clientY || event.touches[0].clientY;
-        this.lon =
-            ((this.mouseDownMouseX - clientX) * this.camera.fov) / 600 +
-            this.mouseDownLon;
-        this.lat =
-            ((clientY - this.mouseDownMouseY) * this.camera.fov) / 600 +
-            this.mouseDownLat;
+        if (this.toggleControl) {
+            if (!this.mouseDownMouseX) return;
+            let clientX = event.clientX || event.touches[0].clientX;
+            let clientY = event.clientY || event.touches[0].clientY;
+            this.lon =
+                ((this.mouseDownMouseX - clientX) * this.camera.fov) / 600 +
+                this.mouseDownLon;
+            this.lat =
+                ((clientY - this.mouseDownMouseY) * this.camera.fov) / 600 +
+                this.mouseDownLat;
+        }
     };
     onPointerUp = () => {
-        this.mouseDownMouseX = null;
+        if (this.toggleControl) {
+            this.mouseDownMouseX = null;
+        }
     };
     onArrowClick = async (event) => {
-        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        if (this.toggleControl) {
+            this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-        this.raycaster.setFromCamera(this.mouse, this.camera);
-        const intersects = this.raycaster.intersectObjects(
-            this.mainSphere.location.arrows,
-            true
-        );
-        if (intersects.length) {
-            await this.mainSphere.changeTo(intersects[0].object.idTo);
+            this.raycaster.setFromCamera(this.mouse, this.camera);
+            const intersects = this.raycaster.intersectObjects(
+                this.mainSphere.location.arrows,
+                true
+            );
+            if (intersects.length) {
+                this.toggleControl = false;
+                this.phi = Math.acos(intersects[0].object.unitVector.y);
+                this.theta = Math.atan2(
+                    intersects[0].object.unitVector.z,
+                    intersects[0].object.unitVector.x
+                );
+                this.lon = THREE.Math.radToDeg(this.theta);
+                this.lat = 90 - THREE.Math.radToDeg(this.phi);
+
+                await this.secondSphere.changeTo(
+                    intersects[0].object.idTo,
+                    false
+                );
+
+                let tweenData = Object.assign(intersects[0].object.unitVector, {
+                    opc1: 1,
+                    opc2: 0,
+                });
+
+                new TWEEN.Tween(tweenData)
+                    .to({ x: 0, y: 0, z: 0, opc1: 0, opc2: 1 }, 1000)
+                    .onUpdate(() => {
+                        this.secondSphere.mesh.position.set(
+                            0.8 * tweenData.x,
+                            0.8 * tweenData.y,
+                            0.8 * tweenData.z
+                        );
+                        this.mainSphere.mesh.material.opacity = tweenData.opc1;
+                        this.secondSphere.mesh.material.opacity =
+                            tweenData.opc2;
+                    })
+                    .start()
+                    .onComplete(async () => {
+                        this.mainSphere.mesh.material.opacity = 1;
+                        this.secondSphere.mesh.material.opacity = 0;
+                        this.secondSphere.mesh.position.set(10, 10, 10);
+                        await this.mainSphere.changeTo(
+                            intersects[0].object.idTo,
+                            true
+                        );
+                        this.toggleControl = true;
+                    });
+            }
         }
     };
     animate = () => {
@@ -114,10 +172,30 @@ class MainPage extends React.Component {
         this.camera.target.z = Math.sin(this.phi) * Math.sin(this.theta);
         this.camera.lookAt(this.camera.target);
         this.renderer.render(this.scene, this.camera);
+        TWEEN.update();
     };
 
     render() {
-        return <div ref={this.mount} />;
+        return (
+            <React.Fragment>
+                {this.state.isLoading && (
+                    <div className="loader-block">
+                        <div id="cube-loader">
+                            <div class="caption">
+                                <div class="cube-loader">
+                                    <div class="cube loader-1"></div>
+                                    <div class="cube loader-2"></div>
+                                    <div class="cube loader-4"></div>
+                                    <div class="cube loader-3"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <div ref={this.mount} />
+            </React.Fragment>
+        );
     }
 }
 export default MainPage;
