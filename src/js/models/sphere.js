@@ -19,6 +19,7 @@ export default class Sphere {
 
     changeTo = async (id, toggleArrows) => {
         this.location.removeArrows();
+        this.mesh.rotation.y = 0;
         this.location = this.app.locations.find((item) => item.id === id);
         if (this.location) {
             this.mesh.material.map = this.location.texture;
@@ -37,9 +38,10 @@ export default class Sphere {
         if (toggleArrows) {
             this.location.createArrows();
         }
-        //меняем текущий айди
-        //this.app.setState({ currentId: id });
-        //прелоад следующих сцен
+        if (this.location.direction) {
+            this.rotateSphere(this.location.direction);
+        }
+
         this.location.siblings.forEach(async (id) => {
             let checkLocation = this.app.locations.find(
                 (item) => item.id === id
@@ -54,5 +56,8 @@ export default class Sphere {
                 this.app.locations.push(preloadLocation);
             }
         });
+    };
+    rotateSphere = (deg) => {
+        this.mesh.rotation.y = (deg * Math.PI) / 180;
     };
 }

@@ -4,11 +4,12 @@ import data from '../models/data';
 import Arrow from '../models/arrow';
 
 export default class Location {
-    constructor({ id, path, coords, siblings }, app) {
+    constructor({ id, path, coords, siblings, direction }, app) {
         this.id = id;
         this.path = path;
         this.coords = coords;
         this.siblings = siblings;
+        this.direction = direction;
         this.app = app;
     }
     arrows = [];
@@ -18,9 +19,6 @@ export default class Location {
                 this.texture = texture;
                 resolve(texture);
             });
-
-            //this.texture = new THREE.TextureLoader().load(this.path);
-            //resolve(this.texture);
         });
     };
 

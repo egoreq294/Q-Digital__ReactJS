@@ -144,7 +144,7 @@ class MainPage extends React.Component {
                     opc1: 1,
                     opc2: 0,
                 });
-
+                this.mainSphere.location.removeArrows();
                 new TWEEN.Tween(tweenData)
                     .to({ x: 0, y: 0, z: 0, opc1: 0, opc2: 1 }, 1000)
                     .onUpdate(() => {
