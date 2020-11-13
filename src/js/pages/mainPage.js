@@ -5,6 +5,8 @@ import TWEEN from 'tween';
 
 import Sphere from '../models/sphere';
 
+import data from '../models/data';
+
 class MainPage extends React.Component {
     locations = [];
     scene;
@@ -21,6 +23,7 @@ class MainPage extends React.Component {
     theta = 0;
     state = {
         isLoading: true,
+        currentId: 0,
     };
     toggleControl = true;
     mouse = new THREE.Vector2();
@@ -48,19 +51,11 @@ class MainPage extends React.Component {
         this.scene.add(this.mainSphere.mesh);
         await this.mainSphere.changeTo(0, true);
 
-        console.log(this.mainSphere.mesh.material.map);
         this.secondSphere = new Sphere(this);
         this.secondSphere.init();
         this.secondSphere.mesh.position.z = -2;
         this.scene.add(this.secondSphere.mesh);
         await this.secondSphere.changeTo(0, false);
-
-        /*this.camera.rotation.y = (45 * Math.PI) / 180;
-        this.camera.rotation.x = (-45 * Math.PI) / 180;
-        this.camera.rotation.z = (30 * Math.PI) / 180;
-        this.camera.position.y = 2;
-        this.camera.position.x = 3;
-        this.camera.position.z = 2;*/
 
         this.camera.target = new THREE.Vector3(0, 0, 0);
         this.mount.current.addEventListener('click', this.onArrowClick);
@@ -68,11 +63,25 @@ class MainPage extends React.Component {
         window.addEventListener('mousemove', this.onPointerMove);
         window.addEventListener('mouseup', this.onPointerUp);
         window.addEventListener('resize', this.onWindowResize);
+
         this.animate();
     }
-    componentWillUnmount() {
-        this.removeEvents();
-    }
+    onMapClick = (event) => {
+        const dot = event.target.closest('span');
+        if (event.target !== dot) {
+            document.querySelector('.map').classList.toggle('active');
+        }
+    };
+    onDotClick = (event, id) => {
+        const dot = event.target.closest('span');
+        if (event.target === dot) {
+            if (document.querySelector('.map').classList.contains('active')) {
+                this.mainSphere.changeTo(id, true);
+                this.setState({ currentId: id });
+            }
+            document.querySelector('.map').classList.toggle('active');
+        }
+    };
     onWindowResize = () => {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
@@ -158,6 +167,7 @@ class MainPage extends React.Component {
                             true
                         );
                         this.toggleControl = true;
+                        this.setState({ currentId: intersects[0].object.idTo });
                     });
             }
         }
@@ -181,18 +191,46 @@ class MainPage extends React.Component {
                 {this.state.isLoading && (
                     <div className="loader-block">
                         <div id="cube-loader">
-                            <div class="caption">
-                                <div class="cube-loader">
-                                    <div class="cube loader-1"></div>
-                                    <div class="cube loader-2"></div>
-                                    <div class="cube loader-4"></div>
-                                    <div class="cube loader-3"></div>
+                            <div className="caption">
+                                <div className="cube-loader">
+                                    <div className="cube loader-1"></div>
+                                    <div className="cube loader-2"></div>
+                                    <div className="cube loader-4"></div>
+                                    <div className="cube loader-3"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 )}
-
+                {!this.state.isLoading && (
+                    <div
+                        onClick={(event) => {
+                            this.onMapClick(event);
+                        }}
+                        className="map"
+                    >
+                        <div className="map__container">
+                            {data.map((item, key) => {
+                                return (
+                                    <span
+                                        className={`map__container__dot ${
+                                            item.id === this.state.currentId &&
+                                            'active'
+                                        }`}
+                                        style={{
+                                            left: `${item.coords.x * 20 + 50}%`,
+                                            top: `${item.coords.z * 2 + 50}%`,
+                                        }}
+                                        key={key}
+                                        onClick={(event) => {
+                                            this.onDotClick(event, item.id);
+                                        }}
+                                    />
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
                 <div ref={this.mount} />
             </React.Fragment>
         );

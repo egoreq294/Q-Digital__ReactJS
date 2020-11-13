@@ -28,8 +28,7 @@ export default class Sphere {
             let newLocationObject = data.find((item) => item.id === id);
             this.location = new Location(newLocationObject, this.app);
             this.app.locations.push(this.location);
-            await this.location.loadTexture().then((res) => {
-                console.log(res);
+            await this.location.loadTexture().then(() => {
                 this.app.setState({ isLoading: false });
                 this.app.toggleControl = true;
             });
@@ -38,6 +37,8 @@ export default class Sphere {
         if (toggleArrows) {
             this.location.createArrows();
         }
+        //меняем текущий айди
+        //this.app.setState({ currentId: id });
         //прелоад следующих сцен
         this.location.siblings.forEach(async (id) => {
             let checkLocation = this.app.locations.find(
