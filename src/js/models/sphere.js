@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import Location from './location';
-import data from './data';
+import data from '../data';
 export default class Sphere {
     constructor(app) {
         this.app = app;
@@ -58,6 +58,6 @@ export default class Sphere {
         });
     };
     rotateSphere = (deg) => {
-        this.mesh.rotation.y = (deg * Math.PI) / 180;
+        this.mesh.rotation.y = THREE.MathUtils.degToRad(deg);
     };
 }

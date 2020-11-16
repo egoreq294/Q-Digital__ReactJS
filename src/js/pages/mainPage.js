@@ -5,7 +5,7 @@ import TWEEN from 'tween';
 
 import Sphere from '../models/sphere';
 
-import data from '../models/data';
+import data from '../data';
 
 class MainPage extends React.Component {
     locations = [];
@@ -58,7 +58,8 @@ class MainPage extends React.Component {
         await this.secondSphere.changeTo(0, false);
 
         this.camera.target = new THREE.Vector3(0, 0, 0);
-        this.mount.current.addEventListener('click', this.onArrowClick);
+        this.mount.current.addEventListener('mousedown', this.onArrowDown);
+        this.mount.current.addEventListener('mouseup', this.onArrowUp);
         window.addEventListener('mousedown', this.onPointerStart);
         window.addEventListener('mousemove', this.onPointerMove);
         window.addEventListener('mouseup', this.onPointerUp);
@@ -115,60 +116,80 @@ class MainPage extends React.Component {
             this.mouseDownMouseX = null;
         }
     };
-    onArrowClick = async (event) => {
+    arrowClientX = 0;
+    arrowClientY = 0;
+    onArrowDown = (event) => {
         if (this.toggleControl) {
-            this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            this.arrowClientX = event.clientX;
+            this.arrowClientY = event.clientY;
+        }
+    };
+    onArrowUp = async (event) => {
+        if (this.toggleControl) {
+            this.mouseDownMouseX = null;
+            if (
+                this.arrowClientX === event.clientX &&
+                this.arrowClientY === event.clientY
+            ) {
+                this.mouse.x = (event.layerX / window.innerWidth) * 2 - 1;
+                this.mouse.y = -(event.layerY / window.innerHeight) * 2 + 1;
 
-            this.raycaster.setFromCamera(this.mouse, this.camera);
-            const intersects = this.raycaster.intersectObjects(
-                this.mainSphere.location.arrows,
-                true
-            );
-            if (intersects.length) {
-                this.toggleControl = false;
-                this.phi = Math.acos(intersects[0].object.unitVector.y);
-                this.theta = Math.atan2(
-                    intersects[0].object.unitVector.z,
-                    intersects[0].object.unitVector.x
+                this.raycaster.setFromCamera(this.mouse, this.camera);
+                const intersects = this.raycaster.intersectObjects(
+                    this.mainSphere.location.arrows,
+                    true
                 );
-                this.lon = THREE.Math.radToDeg(this.theta);
-                this.lat = 90 - THREE.Math.radToDeg(this.phi);
+                if (intersects.length) {
+                    this.toggleControl = false;
+                    this.phi = Math.acos(intersects[0].object.unitVector.y);
+                    this.theta = Math.atan2(
+                        intersects[0].object.unitVector.z,
+                        intersects[0].object.unitVector.x
+                    );
+                    this.lon = THREE.Math.radToDeg(this.theta);
+                    this.lat = 90 - THREE.Math.radToDeg(this.phi);
 
-                await this.secondSphere.changeTo(
-                    intersects[0].object.idTo,
-                    false
-                );
+                    await this.secondSphere.changeTo(
+                        intersects[0].object.idTo,
+                        false
+                    );
 
-                let tweenData = Object.assign(intersects[0].object.unitVector, {
-                    opc1: 1,
-                    opc2: 0,
-                });
-                this.mainSphere.location.removeArrows();
-                new TWEEN.Tween(tweenData)
-                    .to({ x: 0, y: 0, z: 0, opc1: 0, opc2: 1 }, 1000)
-                    .onUpdate(() => {
-                        this.secondSphere.mesh.position.set(
-                            0.8 * tweenData.x,
-                            0.8 * tweenData.y,
-                            0.8 * tweenData.z
-                        );
-                        this.mainSphere.mesh.material.opacity = tweenData.opc1;
-                        this.secondSphere.mesh.material.opacity =
-                            tweenData.opc2;
-                    })
-                    .start()
-                    .onComplete(async () => {
-                        this.mainSphere.mesh.material.opacity = 1;
-                        this.secondSphere.mesh.material.opacity = 0;
-                        this.secondSphere.mesh.position.set(10, 10, 10);
-                        await this.mainSphere.changeTo(
-                            intersects[0].object.idTo,
-                            true
-                        );
-                        this.toggleControl = true;
-                        this.setState({ currentId: intersects[0].object.idTo });
-                    });
+                    let tweenData = Object.assign(
+                        intersects[0].object.unitVector,
+                        {
+                            opc1: 1,
+                            opc2: 0,
+                        }
+                    );
+                    this.mainSphere.location.removeArrows();
+                    new TWEEN.Tween(tweenData)
+                        .to({ x: 0, y: 0, z: 0, opc1: 0, opc2: 1 }, 500)
+                        .onUpdate(() => {
+                            this.secondSphere.mesh.position.set(
+                                0.8 * tweenData.x,
+                                0.8 * tweenData.y,
+                                0.8 * tweenData.z
+                            );
+                            this.mainSphere.mesh.material.opacity =
+                                tweenData.opc1;
+                            this.secondSphere.mesh.material.opacity =
+                                tweenData.opc2;
+                        })
+                        .start()
+                        .onComplete(async () => {
+                            this.mainSphere.mesh.material.opacity = 1;
+                            this.secondSphere.mesh.material.opacity = 0;
+                            this.secondSphere.mesh.position.set(10, 10, 10);
+                            await this.mainSphere.changeTo(
+                                intersects[0].object.idTo,
+                                true
+                            );
+                            this.toggleControl = true;
+                            this.setState({
+                                currentId: intersects[0].object.idTo,
+                            });
+                        });
+                }
             }
         }
     };
