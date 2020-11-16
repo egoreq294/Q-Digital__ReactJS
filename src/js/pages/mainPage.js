@@ -64,7 +64,6 @@ class MainPage extends React.Component {
         window.addEventListener('mousemove', this.onPointerMove);
         window.addEventListener('mouseup', this.onPointerUp);
         window.addEventListener('resize', this.onWindowResize);
-
         this.animate();
     }
     onMapClick = (event) => {
@@ -90,8 +89,8 @@ class MainPage extends React.Component {
     };
     onPointerStart = (event) => {
         if (this.toggleControl) {
-            let clientX = event.clientX || event.touches[0].clientX;
-            let clientY = event.clientY || event.touches[0].clientY;
+            let clientX = event.clientX;
+            let clientY = event.clientY;
             this.mouseDownMouseX = clientX;
             this.mouseDownMouseY = clientY;
             this.mouseDownLon = this.lon;
@@ -101,8 +100,8 @@ class MainPage extends React.Component {
     onPointerMove = (event) => {
         if (this.toggleControl) {
             if (!this.mouseDownMouseX) return;
-            let clientX = event.clientX || event.touches[0].clientX;
-            let clientY = event.clientY || event.touches[0].clientY;
+            let clientX = event.clientX;
+            let clientY = event.clientY;
             this.lon =
                 ((this.mouseDownMouseX - clientX) * this.camera.fov) / 600 +
                 this.mouseDownLon;
