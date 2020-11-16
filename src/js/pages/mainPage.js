@@ -161,33 +161,35 @@ class MainPage extends React.Component {
                         }
                     );
                     this.mainSphere.location.removeArrows();
-                    new TWEEN.Tween(tweenData)
-                        .to({ x: 0, y: 0, z: 0, opc1: 0, opc2: 1 }, 500)
-                        .onUpdate(() => {
-                            this.secondSphere.mesh.position.set(
-                                0.8 * tweenData.x,
-                                0.8 * tweenData.y,
-                                0.8 * tweenData.z
-                            );
-                            this.mainSphere.mesh.material.opacity =
-                                tweenData.opc1;
-                            this.secondSphere.mesh.material.opacity =
-                                tweenData.opc2;
-                        })
-                        .start()
-                        .onComplete(async () => {
-                            this.mainSphere.mesh.material.opacity = 1;
-                            this.secondSphere.mesh.material.opacity = 0;
-                            this.secondSphere.mesh.position.set(10, 10, 10);
-                            await this.mainSphere.changeTo(
-                                intersects[0].object.idTo,
-                                true
-                            );
-                            this.toggleControl = true;
-                            this.setState({
-                                currentId: intersects[0].object.idTo,
+                    setTimeout(() => {
+                        new TWEEN.Tween(tweenData)
+                            .to({ x: 0, y: 0, z: 0, opc1: 0, opc2: 1 }, 500)
+                            .onUpdate(() => {
+                                this.secondSphere.mesh.position.set(
+                                    0.8 * tweenData.x,
+                                    0.8 * tweenData.y,
+                                    0.8 * tweenData.z
+                                );
+                                this.mainSphere.mesh.material.opacity =
+                                    tweenData.opc1;
+                                this.secondSphere.mesh.material.opacity =
+                                    tweenData.opc2;
+                            })
+                            .start()
+                            .onComplete(async () => {
+                                this.mainSphere.mesh.material.opacity = 1;
+                                this.secondSphere.mesh.material.opacity = 0;
+                                this.secondSphere.mesh.position.set(10, 10, 10);
+                                await this.mainSphere.changeTo(
+                                    intersects[0].object.idTo,
+                                    true
+                                );
+                                this.toggleControl = true;
+                                this.setState({
+                                    currentId: intersects[0].object.idTo,
+                                });
                             });
-                        });
+                    }, 500);
                 }
             }
         }

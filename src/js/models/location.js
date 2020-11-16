@@ -15,7 +15,7 @@ export default class Location {
     arrows = [];
     loadTexture = () => {
         return new Promise((resolve) => {
-            new THREE.TextureLoader().load(`${this.path}`, (texture) => {
+            new THREE.TextureLoader().load(this.path, (texture) => {
                 this.texture = texture;
                 resolve(texture);
             });
