@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View} from 'react-native';
 import {connect} from 'react-redux';
-import {Button} from 'react-native-elements';
+import {Button} from '../components/button';
+import styles from '../scss';
 
 import Slider from '../components/slider';
 
@@ -43,16 +44,18 @@ function SliderPage(props) {
   const images = toggle === 'local' ? localStore : props.remoteStore;
 
   return (
-    <View style={styles.sliderPage}>
+    <View style={{...styles.screenContainer, ...styles.alignCenter}}>
       {props.remoteStore && <Slider imgs={images} />}
       <Button
-        buttonStyle={styles.button}
+        style={{...styles.screenButton, ...styles.sliderButton}}
+        styleText={styles.screenButton__text}
         onPress={handleClickSwitch}
         title={'switch to remote'}
       />
       <Button
-        buttonStyle={styles.button}
-        onPress={handlePress}
+        style={{...styles.screenButton, ...styles.sliderButton}}
+        styleText={styles.screenButton__text}
+        to="/"
         title={'Go home'}
       />
     </View>
@@ -63,18 +66,4 @@ const mapStateToProps = (state) => {
     remoteStore: state.remote,
   };
 };
-const styles = StyleSheet.create({
-  sliderPage: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  sliderBtn: {},
-  link: {},
-  button: {
-    backgroundColor: '#000',
-    padding: 15,
-    marginTop: 15,
-  },
-});
 export default connect(mapStateToProps, {setRemote})(SliderPage);

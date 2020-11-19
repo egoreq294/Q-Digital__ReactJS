@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import {View, StyleSheet, Image} from 'react-native';
-import {Button} from 'react-native-elements';
-import {Dimensions} from 'react-native';
+import {View, Image} from 'react-native';
+import {Button} from '../components/button';
+import styles from '../scss';
 
 function Slider(props) {
   const [count, setCount] = useState([0]);
@@ -25,7 +25,8 @@ function Slider(props) {
   return (
     <View style={styles.slider}>
       <Button
-        buttonStyle={styles.button}
+        style={styles.screenButton}
+        styleText={styles.screenButton__text}
         onPress={handleClickPrev}
         title="prev"
       />
@@ -38,7 +39,8 @@ function Slider(props) {
         <Image style={styles.sliderImg} source={props.imgs[count].source} />
       )}
       <Button
-        buttonStyle={styles.button}
+        style={styles.screenButton}
+        styleText={styles.screenButton__text}
         onPress={handleClickNext}
         title="next"
       />
@@ -46,21 +48,4 @@ function Slider(props) {
   );
 }
 
-const styles = StyleSheet.create({
-  slider: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  sliderImg: {
-    width: Dimensions.get('window').width - 150,
-    height: 200,
-    resizeMode: 'contain',
-  },
-  button: {
-    backgroundColor: '#000',
-    padding: 15,
-  },
-});
 export default Slider;
