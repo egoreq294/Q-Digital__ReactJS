@@ -8,9 +8,9 @@ export class Button extends React.Component {
     const {title, onPress, to} = this.props;
     let props = {style: {...style.button, ...this.props.style}};
     if (to) {
-      props['to'] = to;
+      props.to = to;
     } else {
-      props['onPress'] = onPress;
+      props.onPress = onPress;
     }
     return (
       <Link component={TouchableOpacity} {...props}>

@@ -8,7 +8,7 @@ class Menu extends React.Component {
     super(props);
     this.state = {
       buttons: [
-        {to: ROUTES.main.path, title: 'Main'},
+        {to: ROUTES.home.path, title: 'Main'},
         {to: ROUTES.slider.path, title: 'Slider'},
         {to: ROUTES.player.path, title: 'Player'},
         {onPress: this.onSite, title: 'Web'},
