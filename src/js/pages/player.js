@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {View} from 'react-native';
 import TrackPlayer from 'react-native-track-player';
 import styles from '../scss';
 
@@ -16,12 +16,12 @@ export default class PlayerScreen extends React.Component {
         return response.json();
       })
       .then((json) => {
-        return json.map((item) => {
+        return json.map((item, index) => {
           return {
-            id: +new Date(),
+            id: index,
             url: item,
-            title: item.title ? item.title : 'undefined',
-            artist: item.artist ? item.artist : 'undefined',
+            title: item.title ? item.title : `remote: ${index + 1}`,
+            artist: item.artist ? item.artist : 'no artist',
           };
         });
       })
