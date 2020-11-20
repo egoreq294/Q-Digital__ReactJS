@@ -1,16 +1,16 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import TrackPlayer from 'react-native-track-player';
+import styles from '../scss';
 
 import Player from '../components/player';
-import localTrack0 from '../../music/music0.mp3';
-import localTrack1 from '../../music/music1.mp3';
-import localTrack2 from '../../music/music2.mp3';
+import data from '../data/data';
 
 export default class PlayerScreen extends React.Component {
   state = {remoteData: {}};
-
+  _isMounted = false;
   componentDidMount() {
+    this._isMounted = true;
     fetch('https://imagesapi.osora.ru/?isAudio=true')
       .then((response) => {
         return response.json();
@@ -26,13 +26,19 @@ export default class PlayerScreen extends React.Component {
         });
       })
       .then((elem) => {
-        this.setState({remoteData: elem});
+        if (this._isMounted) {
+          this.setState({remoteData: elem});
+        }
       })
       .catch((err) => {
-        alert(err);
+        alert(`Sorry, files were not uploaded, err: ${err}`);
       });
     this.setup();
   }
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   setup = async () => {
     await TrackPlayer.setupPlayer({});
     await TrackPlayer.updateOptions({
@@ -54,34 +60,16 @@ export default class PlayerScreen extends React.Component {
     const currentTrack = await TrackPlayer.getCurrentTrack();
     if (currentTrack == null) {
       await TrackPlayer.reset();
-      if (Object.keys(this.state.remoteData).length) {
+      if (this.state.remoteData.length) {
         this.state.remoteData.map(async (item) => {
-          await TrackPlayer.add({
-            id: item.id,
-            url: item.url,
-            title: item.title,
-            artist: item.artist,
-          });
+          await TrackPlayer.add(item);
         });
       }
-      await TrackPlayer.add({
-        id: 'local-track0',
-        url: localTrack0,
-        title: 'Endorphin',
-        artist: 'Andy Panda feat. Miyagi',
-      });
-      await TrackPlayer.add({
-        id: 'local-track1',
-        url: localTrack1,
-        title: 'Восточные сказки',
-        artist: 'Блестящие и Arash',
-      });
-      await TrackPlayer.add({
-        id: 'local-track2',
-        url: localTrack2,
-        title: 'Режиссер',
-        artist: 'Градусы',
-      });
+      if (data.length) {
+        data.map(async (item) => {
+          await TrackPlayer.add(item);
+        });
+      }
       await TrackPlayer.play();
     } else {
       if (this.playbackState === TrackPlayer.STATE_PAUSED) {
@@ -103,32 +91,15 @@ export default class PlayerScreen extends React.Component {
   };
   render() {
     return (
-      <View style={styles.container}>
+      <View style={[styles.screenContainer, styles.alignCenter]}>
         <Player
           onNext={this.skipToNext}
           style={styles.player}
           onPrevious={this.skipToPrevious}
           onTogglePlayback={this.togglePlayback}
+          isPlay={this.state.isPlay}
         />
       </View>
     );
   }
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  description: {
-    width: '80%',
-    marginTop: 20,
-    textAlign: 'center',
-  },
-  player: {
-    marginTop: 40,
-  },
-  state: {
-    marginTop: 20,
-  },
-});
